@@ -5,5 +5,11 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
+    <style name="Base.Theme.RakitKuy.ActionBar" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
     <style name="Theme.RakitKuy" parent="Base.Theme.RakitKuy" />
+    <style name="Theme.RakitKuy.ActionBar" parent="Base.Theme.RakitKuy.ActionBar" />
 </resources>
