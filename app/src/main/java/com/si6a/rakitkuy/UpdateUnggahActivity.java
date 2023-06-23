@@ -7,62 +7,67 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
-import com.si6a.rakitkuy.databinding.ActivityAddUnggahBinding;
+import com.si6a.rakitkuy.databinding.ActivityUpdateUnggahBinding;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddUnggahActivity extends AppCompatActivity {
-    private ActivityAddUnggahBinding binding;
+public class UpdateUnggahActivity extends AppCompatActivity {
+
+    private ActivityUpdateUnggahBinding binding;
+    private Unggah unggah;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityAddUnggahBinding.inflate(getLayoutInflater());
+        binding = ActivityUpdateUnggahBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.btnAdd.setOnClickListener(new View.OnClickListener() {
+        unggah = getIntent().getParcelableExtra("EXTRA_DATA");
+        String id = unggah.getId();
+
+        binding.etContent.setText(unggah.getContent());
+        binding.btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String content = binding.etContent.getText().toString();
 
-                boolean bolehUnggah = true;
+                boolean bolehUpdate = true;
 
-                if (TextUtils.isEmpty(content)){
-                    bolehUnggah = false;
-                    binding.etContent.setError("Informasi Gunpla Tidak Boleh Kosong!");
+                if (TextUtils.isEmpty(content)) {
+                    bolehUpdate = false;
+                    binding.etContent.setError("Informasi Gunpla tidak boleh kosong!");
                 }
 
-                if (bolehUnggah) {
-                    String userId = Utilities.getValue(AddUnggahActivity.this, "xUserId");
-                    addUnggah(content, userId);
+                if (bolehUpdate) {
+                    updateUnggah(id, content);
                 }
             }
         });
     }
 
-    private void addUnggah(String content, String userId) {
+    private void updateUnggah(String id, String content) {
         binding.progressBar.setVisibility(View.VISIBLE);
         APIService api = Utilities.getRetrofit().create(APIService.class);
-        Call<ValueNoData> call = api.addUnggah(content, userId);
+        Call<ValueNoData> call = api.updateUnggah(id, content);
         call.enqueue(new Callback<ValueNoData>() {
             @Override
             public void onResponse(Call<ValueNoData> call, Response<ValueNoData> response) {
                 binding.progressBar.setVisibility(View.GONE);
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     int success = response.body().getSuccess();
                     String message = response.body().getMessage();
 
-                    if (success == 1){
-                        Toast.makeText(AddUnggahActivity.this, message, Toast.LENGTH_SHORT).show();
+                    if (success == 1) {
+                        Toast.makeText(UpdateUnggahActivity.this, message, Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        Toast.makeText(AddUnggahActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UpdateUnggahActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(AddUnggahActivity.this, "Response " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateUnggahActivity.this, "Berhasil Mengubah Informasi Gunpla", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -70,7 +75,7 @@ public class AddUnggahActivity extends AppCompatActivity {
             public void onFailure(Call<ValueNoData> call, Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
                 System.out.println("Retrofit Error : " + t.getMessage());
-                Toast.makeText(AddUnggahActivity.this, "Retrofit Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateUnggahActivity.this, "Retrofit Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

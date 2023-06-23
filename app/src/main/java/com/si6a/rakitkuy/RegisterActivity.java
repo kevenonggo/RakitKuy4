@@ -10,6 +10,10 @@ import android.widget.Toast;
 
 import com.si6a.rakitkuy.databinding.ActivityRegisterBinding;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private ActivityRegisterBinding binding;
@@ -71,11 +75,38 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void register(String username, String password) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        Toast.makeText(RegisterActivity.this, "Register success!", Toast.LENGTH_SHORT).show();
-        Utilities.setValue(RegisterActivity.this, "xUsername", username);
-        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        binding.progressBar.setVisibility(View.GONE);
+        APIService api = Utilities.getRetrofit().create(APIService.class);
+        Call<ValueData<User>> call = api.register(username, password);
+        call.enqueue(new Callback<ValueData<User>>() {
+            @Override
+            public void onResponse(Call<ValueData<User>> call, Response<ValueData<User>> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200) {
+                    int success = response.body().getSuccess();
+                    String message = response.body().getMessage();
+
+                    if (success == 1) {
+                        User user = response.body().getData();
+                        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Utilities.setValue(RegisterActivity.this, "xUserId", user.getId());
+                        Utilities.setValue(RegisterActivity.this, "xUsername", username);
+                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(RegisterActivity.this, "Response" + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ValueData<User>> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                System.out.println("Retrofit Error: " + t.getMessage());
+                Toast.makeText(RegisterActivity.this, "Retrofit Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

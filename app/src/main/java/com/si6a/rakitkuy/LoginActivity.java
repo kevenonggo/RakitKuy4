@@ -10,6 +10,10 @@ import android.widget.Toast;
 
 import com.si6a.rakitkuy.databinding.ActivityLoginBinding;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
@@ -55,11 +59,39 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(String username, String password) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        Toast.makeText(LoginActivity.this, "Login success!", Toast.LENGTH_SHORT).show();
-        Utilities.setValue(LoginActivity.this, "xUsername", username);
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        binding.progressBar.setVisibility(View.GONE);
+        APIService api = Utilities.getRetrofit().create(APIService.class);
+        Call<ValueData<User>> call = api.login(username, password);
+        call.enqueue(new Callback<ValueData<User>>() {
+            @Override
+            public void onResponse(Call<ValueData<User>> call, Response<ValueData<User>> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.code() == 200){
+                    int success = response.body().getSuccess();
+                    String message = response.body().getMessage();
+
+                    if (success == 1){
+                        User user = response.body().getData();
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Utilities.setValue(LoginActivity.this, "xUserId", user.getId());
+                        Utilities.setValue(LoginActivity.this, "xUsername", username);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(LoginActivity.this, "Response " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ValueData<User>> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
+                System.out.println("Retrofit Error : " + t.getMessage());
+                Toast.makeText(LoginActivity.this, "Retrofit Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddUnggahActivity">
+    tools:context=".UpdateUnggahActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:counterEnabled="true"
-            app:counterMaxLength="100000"
+            app:counterMaxLength="180"
             android:layout_below="@id/iv_logo">
 
             <EditText
@@ -31,25 +31,25 @@
                 android:layout_height="wrap_content"
                 android:hint="Informasi Gunpla"
                 android:inputType="none"
-                android:maxLength="100000"/>
+                android:maxLength="180"/>
 
         </com.google.android.material.textfield.TextInputLayout>
-        
+
         <Button
-            android:id="@+id/btn_add"
+            android:id="@+id/btn_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tambah"
+            android:text="Update"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/til_content"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#3E40ED"/>
+            android:backgroundTint="#3E40ED"
+            android:layout_marginTop="16dp"/>
 
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btn_add"
+            android:layout_below="@id/btn_update"
             android:layout_marginTop="8dp"
             android:layout_centerHorizontal="true"
             android:visibility="gone"/>
