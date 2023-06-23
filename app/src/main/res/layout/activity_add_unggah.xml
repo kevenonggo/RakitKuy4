@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:counterEnabled="true"
-            app:counterMaxLength="100000"
+            app:counterMaxLength="999999999"
             android:layout_below="@id/iv_logo">
 
             <EditText
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Informasi Gunpla"
                 android:inputType="none"
-                android:maxLength="100000"/>
+                android:maxLength="999999999"/>
 
         </com.google.android.material.textfield.TextInputLayout>
         
